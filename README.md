@@ -1,2 +1,2 @@
-# audioStreamer
-Simple audio streaming server
+# videoStreamer
+Simple video streaming server
