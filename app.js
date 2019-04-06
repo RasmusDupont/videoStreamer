@@ -1,48 +1,37 @@
-const express = require('express')
-const fs = require('fs')
-const path = require('path')
-const app = express()
+let path = require('path');
+let logger = require('morgan');
+let express = require('express');
+let bodyParser = require('body-parser');
 
-app.use(express.static(path.join(__dirname, 'public')))
+let app = express();
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname + '/index.htm'))
-})
+//API Routes
+app.use('/', require('./routes/index'));
+app.use('/video', require('./routes/video'));
+//Catch invalid route
+app.use(function(req, res, next) {
+  let err = new Error('Not Found');
+	err.status = 404;
+	next(err);
+});
 
-app.get('/video', function(req, res) {
-  const path = 'assets/sample'
-  const stat = fs.statSync(path)
-  const fileSize = stat.size
-  const range = req.headers.range
+//Log error during requests
+app.use(function(err, req, res, next) {
+	let obj_message = {
+		message: err.message
+	};
 
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-")
-    const start = parseInt(parts[0], 10)
-    const end = parts[1]
-      ? parseInt(parts[1], 10)
-      : fileSize-1
+	if(process.env.NODE_ENV == 'development')
+	{
+		obj_message.error = err;
+		console.error(err);
+	}
 
-    const chunksize = (end-start)+1
-    const file = fs.createReadStream(path, {start, end})
-    const head = {
-      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunksize,
-      'Content-Type': 'video/mp4',
-    }
-
-    res.writeHead(206, head)
-    file.pipe(res)
-  } else {
-    const head = {
-      'Content-Length': fileSize,
-      'Content-Type': 'video/mp4',
-    }
-    res.writeHead(200, head)
-    fs.createReadStream(path).pipe(res)
-  }
-})
-
-app.listen(3000, function () {
-  console.log('Listening on port 3000!')
-})
+	res.status(err.status || 500);
+	res.json(obj_message);
+});
+module.exports = app;
