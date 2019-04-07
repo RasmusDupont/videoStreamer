@@ -1,38 +1,31 @@
-let path = require('path');
-let logger = require('morgan');
-let express = require('express');
-let bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const apiRouter = require('./routes/api');
 
-let app = express();
-app.use(express.static(path.join(__dirname, 'public')));
+const app = express();
+
+app.set('view engine', 'ejs');
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', apiRouter);
 
-//API Routes
-app.use('/', require('./routes/index'));
-app.use('/video', require('./routes/video'));
-//Catch invalid route
-app.use(function(req, res, next) {
+// catch 404 and forward to error handler
+app.use(function(req, res) {
   let err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+  err.status = 404;
+  res.status(404).json('notFound');
 });
 
-//Log error during requests
-app.use(function(err, req, res, next) {
-	let obj_message = {
-		message: err.message
-	};
+// error handler
+app.use(function(err, req, res) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-	if(process.env.NODE_ENV == 'development')
-	{
-		obj_message.error = err;
-		console.error(err);
-	}
-
-	res.status(err.status || 500);
-	res.json(obj_message);
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;

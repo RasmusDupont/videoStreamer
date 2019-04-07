@@ -1,0 +1,21 @@
+{
+    "restartable": "rs",
+    "ignore": [
+      ".git",
+      "node_modules/**/node_modules",
+      "public",
+      "npm-debug.log",
+      "log",
+      "bash/"
+    ],
+    "verbose": true,
+    "execMap": {
+      "js": "node --harmony"
+    },
+    "env": {
+      "NODE_ENV": "development",
+      "WEB_CONCURRENCY": 1,
+      "ORIGIN_BACKEND_URL": "http://localhost:3000"
+    },
+    "ext": "js json"
+  }

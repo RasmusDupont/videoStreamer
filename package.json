@@ -1,19 +1,31 @@
 {
-  "name": "videostreamer",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "engines": {
-    "node": ">=6.2.0"
-  },
+  "name": "warm-b2b-api",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "apidoc": "apidoc -i routes/ -o apidoc/",
+    "test": "mocha",
+    "local": "nodemon ./local.js"
   },
-  "author": "Rasmus Dupont Søgaard",
-  "license": "MIT",
   "dependencies": {
-    "aribts": "^1.3.4",
-    "express": "^4.16.4",
-    "nodemon": "^1.18.10"
+    "async": "^2.1.5",
+    "body-parser": "~1.15.2",
+    "circular-json": "^0.5.5",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "express": "~4.14.0",
+    "express-jwt": "^5.1.0",
+    "express-xml-bodyparser": "^0.3.0",
+    "morgan": "~1.7.0",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.11.1",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "should": "^11.2.0"
   }
 }
