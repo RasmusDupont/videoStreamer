@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+let app = require('../app');
+let http = require('http');
+let cluster = require('cluster');
+
+let server;
+let port = process.env.PORT || 3000;
+app.set('port', port);
+
+//create = spawn multiple app instances to use multi-core processors. 
+//if master, it's in control
+if (cluster.isMaster) {
+    let cpuCount = require('os').cpus().length;
+	if (process.env.NODE_ENV === 'production') {
+		//Memory calcuations
+	}
+    
+    while (cpuCount--) { //create a cluster for every cpu core
+        cluster.fork();
+    }
+	
+	cluster.on('exit', function (process) { //if process dies, fork new process on the cluster
+		cluster.fork();
+		console.log('Worker has exited because of crash: ', process.id);
+
+	});
+} else {
+	server = http.createServer(app);
+	server.listen(port);
+	server.on('error', console.log('Error on ' + cluster.worker.id + ': ' + err));
+	server.on('listening', console.log('Worker ' + cluster.worker.id + ' is listening on port ' + port));
+}

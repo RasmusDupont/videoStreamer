@@ -1,0 +1,19 @@
+{
+	"name": "videoStreamer",
+	"description": "",
+	"repository": "https://github.com/RasmusDupont/videoStreamer.git",
+	"success_url": "/",
+	"env": {
+		"NODE_ENV": {
+			"description": ""
+		},
+		"NPM_CONFIG_PRODUCTION": {
+			"description": "",
+			"value": "true"
+		},
+		"BASE_URL": {
+			"description": "The URL of the project",
+			"value": "https://NAME_OF_THE_SERVER.herokuapp.com"
+		}
+	}
+}
