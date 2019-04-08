@@ -19,6 +19,7 @@
     "express-jwt": "^5.1.0",
     "express-xml-bodyparser": "^0.3.0",
     "morgan": "~1.7.0",
+    "node": "^11.13.0",
     "request": "^2.79.0",
     "request-promise": "^4.1.1"
   },
