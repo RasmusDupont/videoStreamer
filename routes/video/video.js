@@ -3,30 +3,24 @@ const express = require('express');
 const router  = express.Router();
 
 router.get('/', function(req, res, next) {
-
 	console.log("OK /");
 	res.sendStatus(200);
 });
 
 router.get('/japan-mp4', function(req, res, next) {
-
 	console.log("OK /japan-mp4");
 
 	let file = 'assets/why_is_it_so_easy_to_be_thin_in_japan_1080p.mp4';
-
 	//Get file metadata
-	fs.stat(file, function(err, stats) {
-		if (err) {
+	fs.stat(file, function(err, fileStatus) {
+		if(err) {
 			if(err.code === 'ENOENT') {
-				console.log("File false");
+				console.log("File not found");
 				return res.sendStatus(404);
 			}
 			return next(err)
-		} else {
-			console.log("File true");
 		}
         //Byterange - afsnit "Early termination & repositioning a video"
-        //fx 56321 - 155991132
         let byteRange = req.headers.range;
 
 		if(!byteRange) {
@@ -35,8 +29,39 @@ router.get('/japan-mp4', function(req, res, next) {
             err.status = 416;
 			return next(err);
 		}
+
+		let positions = range.replace(/bytes=/, '').split('-');
+		let start = parseInt(positions[0], 10);
+		let end = positions[1] ? parseInt(positions[1], 10) : fileStatus.size - 1;
+		let streamPosition = {
+			start: start,
+			end: end
+		}
+		
+		//bits sent back to the browser
+		let segment = (end - start) + 1;
+
+		let headers = {
+			'Content-Range': 'bytes ' + start + '-' + end + '/' + fileStatus.size,
+			'Accept-Ranges': 'bytes',
+			'Content-Length': segment,
+			'Content-Type': 'video/mp4'
+		}
+
+		//HTTP Code 206 Partial content
+		res.writeHead(206, headers);
+
+		//create streaming segment according to the client request
+		let stream = fs.createReadStream(file, streamPosition);
+
+		stream.on('open', function() {
+			stream.pipe(res);
+		});
+
+		stream.on('error', function(err) {
+			return next(err);
+		});
 	});
-	res.sendStatus(200);
 });
 
 module.exports = router;
