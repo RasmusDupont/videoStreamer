@@ -30,7 +30,7 @@ router.get('/japan-mp4', function(req, res, next) {
 			return next(err);
 		}
 
-		let positions = range.replace(/bytes=/, '').split('-');
+		let positions = byteRange.replace(/bytes=/, '').split('-');
 		let start = parseInt(positions[0], 10);
 		let end = positions[1] ? parseInt(positions[1], 10) : fileStatus.size - 1;
 		let streamPosition = {
