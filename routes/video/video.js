@@ -9,8 +9,23 @@ router.get('/', function(req, res, next) {
 
 router.get('/japan-mp4', function(req, res, next) {
 	console.log("OK /japan-mp4");
+	//141 MB
+	transmit(req, res, next, 'assets/why_is_it_so_easy_to_be_thin_in_japan_1080p.mp4');
+});
 
-	let file = 'assets/why_is_it_so_easy_to_be_thin_in_japan_1080p.mp4';
+router.get('/six-seconds-mp4', function(req, res, next) {
+	console.log("OK /six-seconds-mp4");
+	//3,2 MB
+	transmit(req, res, next, 'assets/six_second_video_sundance_film_festival.mp4');
+});
+
+router.get('/blade-runner-blues-mp4', function(req, res, next) {
+	//22,7 MB - static image
+	transmit(req, res, next, 'assets/blade_runner_blues.mp4');
+});
+
+function transmit(req, res, next, filename) {
+	let file = filename;
 	//Get file metadata
 	fs.stat(file, function(err, fileStatus) {
 		if(err) {
@@ -62,6 +77,6 @@ router.get('/japan-mp4', function(req, res, next) {
 			return next(err);
 		});
 	});
-});
+}
 
 module.exports = router;
