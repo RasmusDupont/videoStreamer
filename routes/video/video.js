@@ -20,6 +20,7 @@ router.get('/six-seconds-mp4', function(req, res, next) {
 });
 
 router.get('/blade-runner-blues-mp4', function(req, res, next) {
+	console.log("OK /blade-runner-blues-mp4");
 	//22,7 MB - static image
 	transmit(req, res, next, 'assets/blade_runner_blues.mp4');
 });
@@ -35,12 +36,10 @@ function transmit(req, res, next, filename) {
 			}
 			return next(err)
 		}
-        //Byterange - afsnit "Early termination & repositioning a video"
         let byteRange = req.headers.range;
 
 		if(!byteRange) {
             let err = new Error('Byterange Error');
-            //https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
             err.status = 416;
 			return next(err);
 		}
@@ -54,19 +53,19 @@ function transmit(req, res, next, filename) {
 		}
 		
 		//bits sent back to the browser
-		let segment = (end - start) + 1;
+		let chunk = (end - start) + 1;
 
 		let headers = {
 			'Content-Range': 'bytes ' + start + '-' + end + '/' + fileStatus.size,
 			'Accept-Ranges': 'bytes',
-			'Content-Length': segment,
+			'Content-Length': chunk,
 			'Content-Type': 'video/mp4'
 		}
 
 		//HTTP Code 206 Partial content
 		res.writeHead(206, headers);
 
-		//create streaming segment according to the client request
+		//create streaming chunk according to the client request
 		let stream = fs.createReadStream(file, streamPosition);
 
 		stream.on('open', function() {
